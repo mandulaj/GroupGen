@@ -2,94 +2,7 @@
 
 <head>
   <title>Group Generator</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial;
-    }
-    header {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      padding-top: 5px;
-      padding-bottom: 5px;
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    }
-    header> h1 {
-      margin: 0;
-      margin-left: 20%;
-      color: white;
-    }
-    .content {
-      margin-top: 40px;
-      padding-left: 20%;
-    }
-  </style>
-  <script>
-    /**
-     * Randomize array element order in-place.
-     * Using Fisher-Yates shuffle algorithm.
-     */
-    function shuffleArray(array) {
-      for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-      return array;
-    }
-
-    function arraySum(array) {
-      var total = 0;
-      for (var i in array) {
-        total += array[i];
-      }
-      return total;
-    }
-
-    function Grouper(peopleList) {
-      this.groups = []
-      this.peopleList = peopleList;
-    }
-
-    Grouper.prototype.shuffle = function() {
-      this.peopleList = shuffleArray(this.peopleList);
-    }
-
-    Grouper.prototype.addPerson = function(person) {
-      this.peopleList.push(person)
-      return this.peopleList.length;
-    }
-    Grouper.prototype.removePerson = function(person) {
-      var index = this.peopleList.indexOf(person);
-      if (index == -1) return -1;
-      this.peopleList.splice(index, 1);
-    }
-
-    Grouper.prototype.partition = function(length) {
-      var result = [];
-      for (var i = 0; i < this.length; i++) {
-        if (i % length === 0) result.push([]);
-        result[result.length - 1].push(this[i]);
-      }
-      return result;
-    }
-
-
-    Grouper.prototype.genAuto = function(groupNum) {
-
-    }
-
-    Grouper.prototype.genByGroupNum = function(groupNum) {
-
-    }
-
-    Grouper.prototype.genByPplNum = function(pplNum) {
-
-    }
-  </script>
-
+  <link rel="stylesheet" href="css/styles.css" media="screen" title="no title" charset="utf-8">
 </head>
 
 <body>
@@ -98,10 +11,31 @@
   </header>
 
   <div class="content">
-    <form>
-      <input type='text'>
-      <input type="textfield" </form>
+    <div class="names-list">
+      <select id="saved-lists">
+        <option disabled seleted>No classes saved</option>
+      </select>
+      <div id="names">
+        <div class="name">
+          <input type="text" placeholder="Name" value="">
+        </div>
+        <div class="name">
+          <input type="text" placeholder="Name" value="">
+        </div>
+        <div class="name">
+          <input type="text" placeholder="Name" value="">
+        </div>
+        <div class="name">
+          <input type="text" placeholder="Name" value="">
+        </div>
+        <div id="addName"></div>
+        <div id="saveNames">Save list</div>
+
+      </div>
+    </div>
   </div>
+  <script src="js/script.js">
+  </script>
 </body>
 
 </html>
