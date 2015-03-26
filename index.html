@@ -9,7 +9,14 @@
   <header>
     <h1>Group Generator</h1>
   </header>
+  <div class="save-dialogue">
+    <h4>Save name list</h4>
+    <input class="name-input" type="text" placeholder="Name" value="">
+    <div class="saveButton" id="saveNamesConfirm">Save list</div>
+  </div>
+  <div class="dialogue-bg">
 
+  </div>
   <div class="content">
     <div class="names-list">
       <select id="saved-lists">
@@ -17,23 +24,24 @@
       </select>
       <div id="names">
         <div class="name">
-          <input type="text" placeholder="Name" value="">
+          <input class="name-input" type="text" placeholder="Name" value="">
         </div>
         <div class="name">
-          <input type="text" placeholder="Name" value="">
+          <input class="name-input" type="text" placeholder="Name" value="">
         </div>
         <div class="name">
-          <input type="text" placeholder="Name" value="">
+          <input class="name-input" type="text" placeholder="Name" value="">
         </div>
         <div class="name">
-          <input type="text" placeholder="Name" value="">
+          <input class="name-input" type="text" placeholder="Name" value="">
         </div>
         <div id="addName"></div>
-        <div id="saveNames">Save list</div>
+        <div class="saveButton" id="saveNames">Save list</div>
 
       </div>
     </div>
   </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="js/script.js">
   </script>
 </body>

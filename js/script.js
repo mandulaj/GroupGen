@@ -1,7 +1,7 @@
 /**
-* Randomize array element order in-place.
-* Using Fisher-Yates shuffle algorithm.
-*/
+ * Randomize array element order in-place.
+ * Using Fisher-Yates shuffle algorithm.
+ */
 function shuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
@@ -60,3 +60,16 @@ Grouper.prototype.genByGroupNum = function(groupNum) {
 Grouper.prototype.genByPplNum = function(pplNum) {
 
 }
+
+function EventHandler() {
+  $("#saveNames").click(this.saveNames);
+
+}
+
+EventHandler.prototype.saveNames = function() {
+
+}
+
+$(document).ready(function() {
+  var handler = new EventHandler();
+});
