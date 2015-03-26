@@ -21,23 +21,23 @@ function arraySum(array) {
 }
 
 function Grouper(peopleList) {
-  this.groups = []
+  this.groups = [];
   this.peopleList = peopleList;
 }
 
 Grouper.prototype.shuffle = function() {
   this.peopleList = shuffleArray(this.peopleList);
-}
+};
 
 Grouper.prototype.addPerson = function(person) {
-  this.peopleList.push(person)
+  this.peopleList.push(person);
   return this.peopleList.length;
-}
+};
 Grouper.prototype.removePerson = function(person) {
   var index = this.peopleList.indexOf(person);
   if (index == -1) return -1;
   this.peopleList.splice(index, 1);
-}
+};
 
 Grouper.prototype.partition = function(length) {
   var result = [];
@@ -46,20 +46,20 @@ Grouper.prototype.partition = function(length) {
     result[result.length - 1].push(this[i]);
   }
   return result;
-}
+};
 
 
 Grouper.prototype.genAuto = function(groupNum) {
 
-}
+};
 
 Grouper.prototype.genByGroupNum = function(groupNum) {
 
-}
+};
 
 Grouper.prototype.genByPplNum = function(pplNum) {
 
-}
+};
 
 function EventHandler() {
   $("#saveNames").click(this.saveNames);
@@ -68,7 +68,7 @@ function EventHandler() {
 
 EventHandler.prototype.saveNames = function() {
 
-}
+};
 
 $(document).ready(function() {
   var handler = new EventHandler();
