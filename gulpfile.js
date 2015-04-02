@@ -9,7 +9,7 @@ var gulp = require('gulp'),
   rename = require('gulp-rename'),
   jade = require('gulp-jade'),
   imageop = require('gulp-image-optimization'),
-  inliner = require('inliner');
+  exec = require('child_process').exec;
 
 var paths = {
   js: "src/js/**/*js",
@@ -73,6 +73,15 @@ gulp.task("image", function() {
       interlaced: true
     }))
     .pipe(gulp.dest('build/img'));
+});
+
+gulp.task("deploy",function(cb) {
+  exec("inliner build/index.html >> output.html", function(err, stdout, stderr) {
+    if (err) return cb(err); // return error
+    console.log(stdout);
+    console.log(stderr);
+    cb(); // finished task
+  });
 });
 
 gulp.task("watch", function() {
