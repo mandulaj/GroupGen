@@ -12,6 +12,28 @@ function shuffleArray(array) {
   return array;
 }
 
+function saveToStorage(key, data) {
+  var stringData;
+  try {
+    stringData = JSON.stringify(data);
+  } catch (err) {
+    return err;
+  }
+  localStorage.saveItem(key, stringData)
+}
+
+function getFromStorage(key) {
+  var data = localStorage.getItem(key);
+  if (data === null) {
+    return null;
+  }
+  try {
+    return JSON.parse(data);
+  } catch (err) {
+    return err;
+  }
+}
+
 function arraySum(array) {
   var total = 0;
   for (var i in array) {
@@ -62,12 +84,62 @@ Grouper.prototype.genByPplNum = function(pplNum) {
 };
 
 function EventHandler() {
-  $("#saveNames").click(this.saveNames);
+  var self = this;
+  $("#saveNames").click(function(){
+    self.saveNames();
+  });
+
+  $(".name > input").on("keydown", function(event){
+    var $this = $(this)
+    if($this.val() !== "" && (event.which === 13 || event.which === 9)) {
+      event.preventDefault();
+      var row = $this.parent();
+      var newRow = row.clone(true).insertAfter(row);
+      var newInput = newRow.find("input")
+      newInput.val("")
+      newInput.focus();
+    }
+    if($this.val() === "" && event.which === 8) {
+      event.preventDefault()
+      var index = $(".name > input").index(this);
+      if (index === 0) return;
+      $this.parent().prev().find("input").focus();
+      $this.parent().remove();
+    }
+  });
+  $(".name > input").on("blur", function(event){
+    var $this = $(this);
+    var allNames = $(".name > input")
+    var index = allNames.index(this);
+    var length = allNames.size();
+    if($this.val() === "" && index+1 !== length) {
+      console.log("removing")
+      $this.parent().remove();
+    }
+  });
 
 }
 
 EventHandler.prototype.saveNames = function() {
+  var savedData = getFromStorage("savedClasses");
+  if (savedData == null) {
+    savedData = {
+      classes: []
+    }
+  }
+  var names = []
+  $(".name > input").each(function(){
+    names.push($(this).val())
+  });
+  var className = this.askUser("Name of the class");
 
+};
+
+EventHandler.prototype.askUser = function(question){
+  var popup = $(".dialogue-bg");
+  popup.find("h4").html(question);
+  popup.show();
+  console.log("asdfa")
 };
 
 $(document).ready(function() {

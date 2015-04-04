@@ -7,25 +7,40 @@ header {
   width: 100%;
   background: rgba(0, 0, 0, 0.5);
   padding-top: 5px;
+  padding-left: 20px;
   padding-bottom: 5px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    color: white;
+  }
 }
-header> h1 {
-  margin: 0;
-  margin-left: 20%;
-  color: white;
-}
-.content {
+
+.container {
   margin-top: 40px;
-  padding-left: 20%;
-  width: 60%
+  .names-list {
+    border: 1px solid rgba(163, 163, 163, 0.55);
+    background: #FBFBFB;
+    padding: 5px;
+    border-radius: 4px;
+    width: 100%;
+    #names {
+      border: 1px solid rgba(163, 163, 163, 0.55);
+      padding: 5px;
+      background: white;
+      .name {
+        padding: 5px;
+      }
+      .name-input {
+        width: 100%;
+        background: white;
+        border: 0;
+        font-size: 28px;
+      }
+    }
+  }
 }
-.names-list {
-  border: 1px solid rgba(163, 163, 163, 0.55);
-  background-color: white;
-  padding: 5px;
-  border-radius: 4px;
-}
+
 #saved-lists {
   border: 1px solid rgba(163, 163, 163, 0.55);
   border-radius: 2px;
@@ -33,18 +48,9 @@ header> h1 {
   padding: 5px;
   margin-bottom: 10px;
 }
-#names {
-  border: 1px solid rgba(163, 163, 163, 0.55);
-  padding: 5px;
-}
-.name {
-  padding: 5px;
-}
-.name-input {
-  background: white;
-  border: 0;
-  font-size: 28px;
-}
+
+
+
 .saveButton {
   width: 90px;
   height: 35px;
@@ -55,12 +61,20 @@ header> h1 {
   line-height: 35px;
   font-size: 20px;
   color: white;
-  transition: background 0.1s;
+  box-shadow: 1px 1px 3px rgba(0,0,0,.2);
+  transition: all 0.2s ease-out;
+  &:hover {
+    background: #1EA320;
+  }
+  &:active {
+    box-shadow: 0px 0px 2px rgba(0,0,0,.5);
+    background: #288125;
+  }
 }
-.saveButton:hover {
-  background: #288125;
-}
+
+
 .dialogue-bg {
+  display: none;
   background: rgba(0, 0, 0, .7);
   width: 100%;
   height: 100%;
@@ -68,17 +82,17 @@ header> h1 {
   top: 0;
   transition: opacity 0.5s;
   z-index: 999;
+  .save-dialogue {
+    padding: 10px;
+    background: white;
+    border: 1px solid rgba(163, 163, 163, 0.55);
+    border-radius: 2px;
+    position: absolute;
+    width: 600px;
+    margin-left: -300px;
+    top: 30%;
+    left: 50%;
+    z-index: 1000;
+  }
 }
-.save-dialogue {
-  padding: 10px;
-  background: white;
-  border: 1px solid rgba(163, 163, 163, 0.55);
-  border-radius: 2px;
-  position: absolute;
-  width: 600px;
-  margin-left: -300px;
-  top: 30%;
-  left: 50%;
-  z-index: 1000;
-  transition: opacity 0.5s;
-}
+
