@@ -1,4 +1,4 @@
-(function ($) {
+(function ($, window) {
 
   /**
    * Randomize array element order in-place.
@@ -21,7 +21,8 @@
     } catch (err) {
       return err;
     }
-    localStorage.saveItem(key, stringData)
+    console.log(stringData)
+    localStorage.setItem(key, stringData)
   }
 
   function getFromStorage(key) {
@@ -85,21 +86,30 @@
 
   };
 
-  function EventHandler() {
+  function EventHandler(app) {
     var self = this;
+    this.app = app;
+
     $("#saveNames").click(function(){
       self.saveNames();
     });
 
+
+    function appendNewNameRow (appendTo, focus) {
+      if (typeof focus === "undefined") focus = false;
+      var newRow = appendTo.clone(true).insertAfter(appendTo);
+      var input = newRow.find("input").val("");
+      if (focus) input.focus()
+      return newRow;
+    }
+
+    // Name input handler
     $(".name > input").on("keydown", function(event){
       var $this = $(this)
       if($this.val() !== "" && (event.which === 13 || event.which === 9)) {
         event.preventDefault();
         var row = $this.parent();
-        var newRow = row.clone(true).insertAfter(row);
-        var newInput = newRow.find("input")
-        newInput.val("")
-        newInput.focus();
+        var newRow = appendNewNameRow(row, true);
       }
       if($this.val() === "" && event.which === 8) {
         event.preventDefault()
@@ -111,7 +121,7 @@
     });
     $(".name > input").on("blur", function(event){
       var $this = $(this);
-      var allNames = $(".name > input")
+      var allNames = $(".name > input");
       var index = allNames.index(this);
       var length = allNames.size();
       if($this.val() === "" && index+1 !== length) {
@@ -123,31 +133,85 @@
   }
 
   EventHandler.prototype.saveNames = function() {
+    var self = this;
     var savedData = getFromStorage("savedClasses");
     if (savedData == null) {
       savedData = {
-        classes: []
       }
     }
     var names = []
     $(".name > input").each(function(){
-      names.push($(this).val())
+      var val = $(this).val();
+      if (val) names.push(val);
     });
-    var className = this.askUser("Name of the class");
+    this.app.gui.askUser("Name of the class",function (value) {
+      if (value === "") {
+        self.app.gui.showError("You have to write some name.")
+        return false;
+      } else {
+        self.app.gui.hideError();
+        return true;
+      }
+    }, function (value) {
+      savedData[value] = names;
+      saveToStorage( "savedClasses", savedData);
+    });
 
   };
 
-  EventHandler.prototype.askUser = function(question){
+  function GUI (app) {
+    this.app = app;
+  }
+
+  GUI.prototype.askUser = function(question, check, cb){
+    var self = this;
     var popup = $(".dialogue-bg");
+
+    function cleanup () {
+      popup.find("input").val("")
+      self.hideError();
+      popup.fadeOut();
+      popup.find('button').unbind('click');
+    }
+
     popup.find("h4").html(question);
-    popup.show();
-    console.log("asdfa")
+    popup.fadeIn();
+    popup.find("input").focus();
+    popup.find("#cancel").click(function(){
+      cleanup();
+    });
+    popup.find("#saveNamesConfirm").click(function () {
+      var input = popup.find("input");
+      var value = input.val();
+      console.log(value, input)
+      if (check(value)) {
+        cb(value);
+        cleanup();
+      }
+    })
   };
+
+  GUI.prototype.showError = function(text) {
+    var title = $(".dialogue-bg").find("h4");
+    var errorBox;
+    if (title.next().hasClass('bg-danger')) {
+      errorBox = title.next();
+    } else {
+      errorBox = title.after("<p class='bg-danger'></p>").next();
+    }
+    errorBox.html(text);
+  };
+
+  GUI.prototype.hideError = function() {
+    $(".dialogue-bg").find(".bg-danger").remove();
+  };
+
+  function App () {
+    this.handler = new EventHandler(this);
+    this.gui = new GUI(this);
+  }
 
   $(document).ready(function() {
-    var handler = new EventHandler();
+    window.app = new App()
   });
-
-
-
-})($)
+})($, window)
