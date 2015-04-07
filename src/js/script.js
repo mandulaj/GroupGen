@@ -1,4 +1,4 @@
-(function ($, window) {
+(function($, window) {
 
   /**
    * Randomize array element order in-place.
@@ -21,8 +21,8 @@
     } catch (err) {
       return err;
     }
-    console.log(stringData)
-    localStorage.setItem(key, stringData)
+    console.log(stringData);
+    localStorage.setItem(key, stringData);
   }
 
   function getFromStorage(key) {
@@ -90,42 +90,42 @@
     var self = this;
     this.app = app;
 
-    $("#saveNames").click(function(){
+    $("#saveNames").click(function() {
       self.saveNames();
     });
 
 
-    function appendNewNameRow (appendTo, focus) {
+    function appendNewNameRow(appendTo, focus) {
       if (typeof focus === "undefined") focus = false;
       var newRow = appendTo.clone(true).insertAfter(appendTo);
       var input = newRow.find("input").val("");
-      if (focus) input.focus()
+      if (focus) input.focus();
       return newRow;
     }
 
     // Name input handler
-    $(".name > input").on("keydown", function(event){
-      var $this = $(this)
-      if($this.val() !== "" && (event.which === 13 || event.which === 9)) {
+    $(".name > input").on("keydown", function(event) {
+      var $this = $(this);
+      if ($this.val() !== "" && (event.which === 13 || event.which === 9)) {
         event.preventDefault();
         var row = $this.parent();
         var newRow = appendNewNameRow(row, true);
       }
-      if($this.val() === "" && event.which === 8) {
-        event.preventDefault()
+      if ($this.val() === "" && event.which === 8) {
+        event.preventDefault();
         var index = $(".name > input").index(this);
         if (index === 0) return;
         $this.parent().prev().find("input").focus();
         $this.parent().remove();
       }
     });
-    $(".name > input").on("blur", function(event){
+    $(".name > input").on("blur", function(event) {
       var $this = $(this);
       var allNames = $(".name > input");
       var index = allNames.index(this);
       var length = allNames.size();
-      if($this.val() === "" && index+1 !== length) {
-        console.log("removing")
+      if ($this.val() === "" && index + 1 !== length) {
+        console.log("removing");
         $this.parent().remove();
       }
     });
@@ -135,40 +135,39 @@
   EventHandler.prototype.saveNames = function() {
     var self = this;
     var savedData = getFromStorage("savedClasses");
-    if (savedData == null) {
-      savedData = {
-      }
+    if (savedData === null) {
+      savedData = {};
     }
-    var names = []
-    $(".name > input").each(function(){
+    var names = [];
+    $(".name > input").each(function() {
       var val = $(this).val();
       if (val) names.push(val);
     });
-    this.app.gui.askUser("Name of the class",function (value) {
+    this.app.gui.askUser("Name of the class", function(value) {
       if (value === "") {
-        self.app.gui.showError("You have to write some name.")
+        self.app.gui.showError("You have to write some name.");
         return false;
       } else {
         self.app.gui.hideError();
         return true;
       }
-    }, function (value) {
+    }, function(value) {
       savedData[value] = names;
-      saveToStorage( "savedClasses", savedData);
+      saveToStorage("savedClasses", savedData);
     });
 
   };
 
-  function GUI (app) {
+  function GUI(app) {
     this.app = app;
   }
 
-  GUI.prototype.askUser = function(question, check, cb){
+  GUI.prototype.askUser = function(question, check, cb) {
     var self = this;
     var popup = $(".dialogue-bg");
 
-    function cleanup () {
-      popup.find("input").val("")
+    function cleanup() {
+      popup.find("input").val("");
       self.hideError();
       popup.fadeOut();
       popup.find('button').unbind('click');
@@ -177,18 +176,18 @@
     popup.find("h4").html(question);
     popup.fadeIn();
     popup.find("input").focus();
-    popup.find("#cancel").click(function(){
+    popup.find("#cancel").click(function() {
       cleanup();
     });
-    popup.find("#saveNamesConfirm").click(function () {
+    popup.find("#saveNamesConfirm").click(function() {
       var input = popup.find("input");
       var value = input.val();
-      console.log(value, input)
+      console.log(value, input);
       if (check(value)) {
         cb(value);
         cleanup();
       }
-    })
+    });
   };
 
   GUI.prototype.showError = function(text) {
@@ -206,12 +205,12 @@
     $(".dialogue-bg").find(".bg-danger").remove();
   };
 
-  function App () {
+  function App() {
     this.handler = new EventHandler(this);
     this.gui = new GUI(this);
   }
 
   $(document).ready(function() {
-    window.app = new App()
+    window.app = new App();
   });
-})($, window)
+})($, window);
