@@ -9,6 +9,7 @@ var gulp = require('gulp'),
   rename = require('gulp-rename'),
   jade = require('gulp-jade'),
   imageop = require('gulp-image-optimization'),
+  jsdoc = require("gulp-jsdoc"),
   exec = require('child_process').exec;
 
 var paths = {
