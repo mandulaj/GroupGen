@@ -1,8 +1,18 @@
-(function($, window) {
+/**
+ * @fileoverview Main js
+ * @author Jakub
+ */
+
+/**
+ * App
+ */
+var App = function($, window) {
 
   /**
-   * Randomize array element order in-place.
-   * Using Fisher-Yates shuffle algorithm.
+   * shuffleArray - randomize array element order in place using fishe-yates suffle algorithm
+   *
+   * @param  {Array} array Array to be suffled
+   * @return {Array}       Shuffled array
    */
   function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
@@ -14,18 +24,30 @@
     return array;
   }
 
-  function saveToStorage(key, data) {
+  function Storage(app) {
+    this.app = app;
+  }
+
+  Storage.prototype.init = function() {
+
+  };
+    /**
+     * saveToStorage - save an object structure to storage under a key
+     *
+     * @param  {string} key DB key
+     * @param  {object} data Data object=
+     */
+  Storage.prototype.saveToStorage = function(key, data) {
     var stringData;
     try {
       stringData = JSON.stringify(data);
     } catch (err) {
       return err;
     }
-    console.log(stringData);
     localStorage.setItem(key, stringData);
-  }
+  };
 
-  function getFromStorage(key) {
+  Storage.prototype.getFromStorage = function(key) {
     var data = localStorage.getItem(key);
     if (data === null) {
       return null;
@@ -35,7 +57,17 @@
     } catch (err) {
       return err;
     }
-  }
+  };
+
+  Storage.prototype.keyExists = function(key, name) {
+    console.log(key, name)
+    var data = this.getFromStorage(key);
+    if (data && data[name]) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   function arraySum(array) {
     var total = 0;
@@ -87,21 +119,20 @@
   };
 
   function EventHandler(app) {
-    var self = this;
     this.app = app;
+  }
+
+  EventHandler.prototype.init = function(){
+    var self = this;
+    $("#saveNames").unbind();
+    $("#clearList").unbind();
+    $("#deleteList").unbind();
+    $(".name > input").unbind();
+    $("#saved-lists").unbind();
 
     $("#saveNames").click(function() {
       self.saveNames();
     });
-
-
-    function appendNewNameRow(appendTo, focus) {
-      if (typeof focus === "undefined") focus = false;
-      var newRow = appendTo.clone(true).insertAfter(appendTo);
-      var input = newRow.find("input").val("");
-      if (focus) input.focus();
-      return newRow;
-    }
 
     // Name input handler
     $(".name > input").on("keydown", function(event) {
@@ -109,7 +140,7 @@
       if ($this.val() !== "" && (event.which === 13 || event.which === 9)) {
         event.preventDefault();
         var row = $this.parent();
-        var newRow = appendNewNameRow(row, true);
+        var newRow = self.app.gui.appendNewNameRow(row, true);
       }
       if ($this.val() === "" && event.which === 8) {
         event.preventDefault();
@@ -125,16 +156,28 @@
       var index = allNames.index(this);
       var length = allNames.size();
       if ($this.val() === "" && index + 1 !== length) {
-        console.log("removing");
         $this.parent().remove();
       }
     });
 
-  }
+    $("#saved-lists").change(function(){
+      var value = $(this).find("option:selected").val();
+      if (value) self.app.gui.renderList(value);
+    });
+
+
+    $("#clearList").click(function(){
+      self.app.gui.clearList();
+    });
+
+    $("#deleteList").click(function(){
+      self.app.gui.deleteList();
+    });
+  };
 
   EventHandler.prototype.saveNames = function() {
     var self = this;
-    var savedData = getFromStorage("savedClasses");
+    var savedData = this.app.storage.getFromStorage("savedClasses");
     if (savedData === null) {
       savedData = {};
     }
@@ -148,30 +191,40 @@
         self.app.gui.showError("You have to write some name.");
         return false;
       } else {
+        if(self.app.storage.keyExists("savedClasses", value)) {
+            self.app.gui.showError("The name '"+value+"' is already used.");
+            return false;
+        }
         self.app.gui.hideError();
         return true;
       }
     }, function(value) {
       savedData[value] = names;
-      saveToStorage("savedClasses", savedData);
+      this.app.storage.saveToStorage("savedClasses", savedData);
+      this.app.gui.updateSavedList();
     });
 
   };
 
   function GUI(app) {
     this.app = app;
+    this.currentList = "";
   }
+
+  GUI.prototype.init = function(){
+    this.updateSavedList();
+  };
 
   GUI.prototype.askUser = function(question, check, cb) {
     var self = this;
     var popup = $(".dialogue-bg");
 
-    function cleanup() {
+    var cleanup = function() {
       popup.find("input").val("");
       self.hideError();
       popup.fadeOut();
       popup.find('button').unbind('click');
-    }
+    };
 
     popup.find("h4").html(question);
     popup.fadeIn();
@@ -182,7 +235,6 @@
     popup.find("#saveNamesConfirm").click(function() {
       var input = popup.find("input");
       var value = input.val();
-      console.log(value, input);
       if (check(value)) {
         cb(value);
         cleanup();
@@ -201,16 +253,75 @@
     errorBox.html(text);
   };
 
+  GUI.prototype.appendNewNameRow = function(appendTo, focus) {
+    if (typeof focus === "undefined") focus = false;
+    var newRow = appendTo.clone(true).insertAfter(appendTo);
+    var input = newRow.find("input").val("");
+    if (focus) input.focus();
+    return newRow;
+  };
+
   GUI.prototype.hideError = function() {
     $(".dialogue-bg").find(".bg-danger").remove();
   };
 
+  GUI.prototype.updateSavedList = function() {
+    var classes = this.app.storage.getFromStorage('savedClasses');
+    var html = "";
+    for (var i in classes) {
+      html += '<option value="' + i + '">' + i + '</option>';
+    }
+    if (html) {
+      html = '<option seleted value=""> Select a class</options>' + html;
+      $("#saved-lists").html(html);
+    } else {
+      $("#saved-lists").html('<option disabled seleted> No classes saved</options>');
+    }
+  };
+
+  GUI.prototype.clearList = function(){
+    $('#names').find(".name").remove();
+    $('#names').prepend('<div class="name"><input class="name-input" type="text" placeholder="Name"></div>');
+  };
+
+  GUI.prototype.renderList = function(listName){
+    var classes = this.app.storage.getFromStorage('savedClasses');
+    this.currentList = listName;
+    var list = classes[listName];
+    var html = "";
+    for (var i in list) {
+      html += '<div class="name"><input class="name-input" type="text" placeholder="Name" value="'+list[i]+'"></div>';
+    }
+    $('#names').find(".name").remove();
+    $('#names').prepend(html);
+    this.app.handler.init();
+
+  };
+
+  GUI.prototype.deleteList = function(){
+
+    if(this.currentList && this.app.storage.keyExists("savedClasses", this.currentList)) {
+      console.log(this.currentList,"asdfS")
+      this.askUser("You are about to delete the list '" + this.currentList + "'", function(ok){
+
+      });
+    }
+  };
+
   function App() {
     this.handler = new EventHandler(this);
+    this.storage = new Storage(this);
     this.gui = new GUI(this);
+
+    this.handler.init();
+    this.storage.init();
+    this.gui.init();
   }
 
   $(document).ready(function() {
     window.app = new App();
   });
-})($, window);
+};
+
+
+App($, window);
